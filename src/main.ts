@@ -1,53 +1,81 @@
-import { Author } from './models/Author';
-import { Book } from './models/Book';
-import { EBook } from './models/EBook';
-import { Copy } from './models/Copy';
-import { Reader } from './models/Reader';
-import { Library } from './models/Library';
-import { BorrowService } from './services/BorrowService';
+import { TaskManager } from './services/TaskManager';
 
-// Створення автора та книг
-const author = new Author('John Doe');
-const book = new Book('The Great Book', 2020, author);
-const ebook = new EBook('Digital Book', 2021, author, '<https://example.com/ebook>');
+const manager = new TaskManager();
 
-// Створення копій
-const copy1 = new Copy(book);
-const copy2 = new Copy(book);
+// Додаємо нову задачу
+const taskId = manager.addTask({
+    title: 'Завершити домашнє завдання',
+    priority: 'high'
+});
 
-// Створення читача
-const reader = new Reader('1', 'Alice');
+console.log('--- Після додавання задачі ---');
+console.log(manager.getTasks());
 
-// Створення бібліотеки та додавання об'єктів
-const library = new Library();
-library.addAuthor(author);
-library.addBook(book);
-library.addBook(ebook);
-library.addCopy(copy1);
-library.addCopy(copy2);
-library.addReader(reader);
+// Оновлюємо задачу
+manager.updateTask(taskId, {
+    title: 'Завершити складне домашнє завдання',
+    priority: 'medium'
+});
 
-// Створення сервісу позичання
-const borrowService = new BorrowService();
+console.log('--- Після оновлення задачі ---');
+console.log(manager.getTasks());
 
-// Демонстрація позичання
-console.log('Attempting to borrow copy1...');
-const borrowResult1 = borrowService.borrow(reader, copy1);
-console.log(`Borrow result: ${borrowResult1}`);
+// Позначаємо задачу як виконану
+manager.completeTask(taskId, true);
 
-console.log('Attempting to borrow copy1 again...');
-const borrowResult2 = borrowService.borrow(reader, copy1);
-console.log(`Borrow result: ${borrowResult2}`);
+console.log('--- Після позначення як виконаної ---');
+console.log(manager.getTasks());
 
-// Демонстрація повернення
-console.log('Attempting to return copy1...');
-borrowService.returnBook(reader, copy1);
-console.log(`Copy1 is available: ${copy1.isCopyAvailable()}`);
+// Видаляємо задачу
+manager.removeTask(taskId);
 
-// Демонстрація поліморфізму
-console.log('\nBook descriptions:');
-console.log(book.getDescription());
-console.log(ebook.getDescription());
+console.log('--- Після видалення задачі ---');
+console.log(manager.getTasks());
 
-// Спроба створити AbstractBook
-// const abstractBook = new AbstractBook('Test', 2022); // Повинно викликати помилку компіляції
+// Скасовуємо видалення
+manager.undo();
+
+console.log('--- Після undo видалення ---');
+console.log(manager.getTasks());
+
+// Скасовуємо зміну статусу (completed)
+manager.undo();
+
+console.log('--- Після undo виконання задачі ---');
+console.log(manager.getTasks());
+
+// Скасовуємо оновлення задачі
+manager.undo();
+
+console.log('--- Після undo оновлення задачі ---');
+console.log(manager.getTasks());
+
+// Скасовуємо додавання задачі
+manager.undo();
+
+console.log('--- Після undo додавання задачі ---');
+console.log(manager.getTasks());
+
+// Відновлюємо додавання задачі
+manager.redo();
+
+console.log('--- Після redo додавання задачі ---');
+console.log(manager.getTasks());
+
+// Відновлюємо оновлення задачі
+manager.redo();
+
+console.log('--- Після redo оновлення задачі ---');
+console.log(manager.getTasks());
+
+// Відновлюємо зміну статусу
+manager.redo();
+
+console.log('--- Після redo виконання задачі ---');
+console.log(manager.getTasks());
+
+// Відновлюємо видалення задачі
+manager.redo();
+
+console.log('--- Після redo видалення задачі ---');
+console.log(manager.getTasks()); 
