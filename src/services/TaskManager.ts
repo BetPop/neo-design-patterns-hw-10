@@ -22,15 +22,18 @@ export class TaskManager {
   }
 
   removeTask(id: string): void {
-    // TODO
+    const command = new RemoveTaskCommand(this.taskList, id);
+    this.history.executeCommand(command);
   }
 
   updateTask(id: string, updates: Partial<Task>): void {
-    // TODO
+    const command = new UpdateTaskCommand(this.taskList, id, updates);
+    this.history.executeCommand(command);
   }
 
   completeTask(id: string, completed: boolean = true): void {
-    // TODO
+    const command = new CompleteTaskCommand(this.taskList, id, completed);
+    this.history.executeCommand(command);
   }
 
   undo(): void {

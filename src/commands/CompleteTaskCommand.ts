@@ -1,9 +1,8 @@
-import { AbstractCommand } from "./AbstractCommand";
-import { TaskList } from "../models/TaskList";
-import { Task } from "../models/Task";
+import { AbstractCommand } from './AbstractCommand';
+import { TaskList } from '../models/TaskList';
 
 export class CompleteTaskCommand extends AbstractCommand {
-  private previousState: boolean | undefined;
+  private oldCompleted?: boolean;
 
   constructor(
     private taskList: TaskList,
@@ -14,10 +13,16 @@ export class CompleteTaskCommand extends AbstractCommand {
   }
 
   execute(): void {
-    // TODO
+    const task = this.taskList.getAllTasks().find(t => t.id === this.taskId);
+    if (task) {
+      this.oldCompleted = task.completed;
+      this.taskList.completeTask(this.taskId, this.completed);
+    }
   }
 
   undo(): void {
-    // TODO
+    if (this.oldCompleted !== undefined) {
+      this.taskList.completeTask(this.taskId, this.oldCompleted);
+    }
   }
 }
